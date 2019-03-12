@@ -44,9 +44,9 @@ func ApplyInputToNeuron(i Input, n Neuron) (float64, float64) {
 
 // Predict generates the prediction
 func Predict(n1, n2, n3 Neuron, i Input) float64 {
-	_, n1Activation := ApplyInputToNeuron(i, n1)
-	_, n2Activation := ApplyInputToNeuron(i, n2)
-	_, n3Activation := ApplyInputToNeuron(Input{n1Activation, n2Activation, 0.0}, n3)
+	n1Activation, _ := ApplyInputToNeuron(i, n1)
+	n2Activation, _ := ApplyInputToNeuron(i, n2)
+	n3Activation, _ := ApplyInputToNeuron(Input{n1Activation, n2Activation, 0.0}, n3)
 
 	return n3Activation
 }
@@ -109,8 +109,8 @@ func GenTrainingData() []Input {
 	avgWeight := tWeight / float64(len(inputs))
 
 	for i := range inputs {
-		inputs[i].One -= avgHeight
-		inputs[i].Two -= avgWeight
+		inputs[i].One -= avgWeight
+		inputs[i].Two -= avgHeight
 	}
 
 	return inputs
@@ -130,9 +130,9 @@ func main() {
 	for i := 1; i <= epochs; i++ {
 		for _, input := range inputs {
 
-			n1Result, n1Activation := ApplyInputToNeuron(input, n1)
-			n2Result, n2Activation := ApplyInputToNeuron(input, n2)
-			n3Result, n3Activation := ApplyInputToNeuron(Input{n1Activation, n2Activation, 0.0}, n3)
+			n1Activation, n1Result := ApplyInputToNeuron(input, n1)
+			n2Activation, n2Result := ApplyInputToNeuron(input, n2)
+			n3Activation, n3Result := ApplyInputToNeuron(Input{n1Activation, n2Activation, 0.0}, n3)
 
 			prediction := n3Activation
 
