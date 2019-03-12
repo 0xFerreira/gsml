@@ -126,6 +126,9 @@ func main() {
 
 	learnRate := 0.0001
 	epochs := 4000
+	lastLoss := 0.0
+	lastLossSetValue := 0.0
+	lastLossSet := false
 
 	for i := 1; i <= epochs; i++ {
 		for _, input := range inputs {
@@ -169,20 +172,33 @@ func main() {
 			n3.Bias -= learnRate * pLpPrediction * pPredictionpB3
 		}
 
-		if i%1000 == 0 {
-			var dPredictions []float64
-			for _, input := range inputs {
-				dPredictions = append(dPredictions, Predict(n1, n2, n3, input))
-			}
-			loss := mse(inputs, dPredictions)
-			fmt.Printf("Epoch %d loss %.4f\n", i, loss)
+		var dPredictions []float64
+		for _, input := range inputs {
+			dPredictions = append(dPredictions, Predict(n1, n2, n3, input))
 		}
+		loss := mse(inputs, dPredictions)
+
+		if !lastLossSet {
+			fmt.Printf("Epoch %d loss %.4f\n", i, loss)
+			lastLossSetValue = loss
+			lastLossSet = true
+		}
+
+		if lastLossSetValue/loss >= 2.0 {
+			fmt.Printf("Epoch %d loss %.4f\n", i, loss)
+			lastLossSetValue = loss
+		}
+		lastLoss = loss
 	}
+
+	fmt.Printf("Final Epoch %d has %.2f%% accuracy!\n", epochs, (1.0-lastLoss)*100)
 
 	a1 := Predict(n1, n2, n3, Input{136.6870, 69.6850, +1.0})
 	a2 := Predict(n1, n2, n3, Input{244.7130, 72.0472, +0.0})
+	a3 := Predict(n1, n2, n3, Input{141.0960, 66.5354, +0.0})
 
-	fmt.Printf("Fabi expected is %.4f\n", a1)
-	fmt.Printf("Guilherme expected is %.4f\n", a2)
+	fmt.Printf("Fabiana WomanIndex: %.4f%%\n", a1*100)
+	fmt.Printf("Guilherme WomanIndex: %.4f%%\n", a2*100)
+	fmt.Printf("Rosely WomanIndex: %.4f%%\n", a3*100)
 
 }
